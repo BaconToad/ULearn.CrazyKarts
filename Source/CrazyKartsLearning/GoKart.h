@@ -29,8 +29,15 @@ public:
 private:
 	FVector Velocity;
 	float Throttle;
+	float SteeringThrow;
 
 	void MoveForward(float value);
+	void MoveRight(float value);
+
+	void UpdatePositionFromVelocity(float DeltaTime);
+	void UpdateRotation(float DeltaTime);
+	FVector ApplyAirResistence();
+	FVector GetGroundAcceleration();
 
 	UPROPERTY(EditAnywhere)
 		float Mass = 1000;
@@ -40,4 +47,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 		float MaxForce = 1000;
+
+	UPROPERTY(EditAnywhere)
+		float MaxDegreesPerSecond = 90;
 };

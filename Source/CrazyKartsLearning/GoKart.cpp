@@ -53,8 +53,12 @@ FVector AGoKart::ApplyAirResistence()
 
 void AGoKart::UpdateRotation(float DeltaTime)
 {
-	float RotationAngle = MaxDegreesPerSecond * DeltaTime * SteeringThrow;
-	FQuat RotationDelta(GetActorUpVector(), FMath::DegreesToRadians(RotationAngle));
+	float radius = 20;
+	float translation = FVector::DotProduct(GetActorForwardVector(), CalcTranslation(DeltaTime));
+	float dAngle = (translation / radius) * SteeringThrow;
+
+	//float RotationAngle = MaxDegreesPerSecond * DeltaTime * SteeringThrow;
+	FQuat RotationDelta(GetActorUpVector(), FMath::DegreesToRadians(dAngle));
 
 	Velocity = RotationDelta.RotateVector(Velocity);
 
@@ -63,7 +67,7 @@ void AGoKart::UpdateRotation(float DeltaTime)
 
 void AGoKart::UpdatePositionFromVelocity(float DeltaTime)
 {
-	FVector translation = Velocity * 100 * DeltaTime;
+	FVector translation = CalcTranslation(DeltaTime);
 
 	FHitResult hitResult;
 
@@ -71,6 +75,11 @@ void AGoKart::UpdatePositionFromVelocity(float DeltaTime)
 
 	if (hitResult.IsValidBlockingHit())
 		Velocity = FVector::ZeroVector;
+}
+
+FVector AGoKart::CalcTranslation(float DeltaTime)
+{
+	return Velocity * 100 * DeltaTime;
 }
 
 // Called to bind functionality to input

@@ -35,6 +35,7 @@ private:
 	void MoveRight(float value);
 
 	void UpdatePositionFromVelocity(float DeltaTime);
+	FVector CalcTranslation(float DeltaTime);
 	void UpdateRotation(float DeltaTime);
 	FVector ApplyAirResistence();
 	FVector GetGroundAcceleration();

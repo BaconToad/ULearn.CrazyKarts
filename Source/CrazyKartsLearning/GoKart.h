@@ -19,23 +19,29 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	FString GetEnumText(ENetRole role);
+
 private:
 	FVector Velocity;
 	float Throttle;
 	float SteeringThrow;
 
-	UFUNCTION(Server, Reliable, WithValidation)
-	void Server_MoveForward(float value);
+	void MoveForward(float value);
 
 	UFUNCTION(Server, Reliable, WithValidation)
-	void Server_MoveRight(float value);
+		void Server_MoveForward(float value);
+
+	void MoveRight(float value);
+
+	UFUNCTION(Server, Reliable, WithValidation)
+		void Server_MoveRight(float value);
 
 	void UpdatePositionFromVelocity(float DeltaTime);
 	FVector CalcTranslation(float DeltaTime);

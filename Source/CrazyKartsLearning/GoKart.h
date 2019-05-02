@@ -31,8 +31,11 @@ private:
 	float Throttle;
 	float SteeringThrow;
 
-	void MoveForward(float value);
-	void MoveRight(float value);
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_MoveForward(float value);
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_MoveRight(float value);
 
 	void UpdatePositionFromVelocity(float DeltaTime);
 	FVector CalcTranslation(float DeltaTime);

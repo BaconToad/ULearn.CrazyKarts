@@ -87,17 +87,26 @@ void AGoKart::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAxis("MoveForward", this, &AGoKart::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &AGoKart::MoveRight);
+	PlayerInputComponent->BindAxis("MoveForward", this, &AGoKart::Server_MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &AGoKart::Server_MoveRight);
 }
 
-void AGoKart::MoveForward(float value)
+void AGoKart::Server_MoveForward_Implementation(float value)
 {
 	Throttle = value * ThrottleMultiplier;
 }
 
-void AGoKart::MoveRight(float value)
+bool AGoKart::Server_MoveForward_Validate(float value)
+{
+	return FMath::Abs(value) <= 1;
+}
+
+void AGoKart::Server_MoveRight_Implementation(float value)
 {
 	SteeringThrow = value;
 }
 
+bool AGoKart::Server_MoveRight_Validate(float value)
+{
+	return FMath::Abs(value) <= 1;
+}

@@ -4,13 +4,14 @@
 #include "Components/InputComponent.h"
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AGoKart::AGoKart()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	bReplicates = true;
 }
 
 // Called when the game starts or when spawned
@@ -18,6 +19,13 @@ void AGoKart::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void AGoKart::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AGoKart, ReplicatedLocation);
+	DOREPLIFETIME(AGoKart, ReplicatedRotation);
 }
 
 // Called every frame
@@ -30,9 +38,16 @@ void AGoKart::Tick(float DeltaTime)
 
 	Velocity += acceleration * DeltaTime;
 
-	UpdateRotation(DeltaTime);
+	
 
-	UpdatePositionFromVelocity(DeltaTime);
+	if (HasAuthority()) {
+		UpdateRotation(DeltaTime);
+		UpdatePositionFromVelocity(DeltaTime);
+	}
+	else {
+		this->SetActorRotation(ReplicatedRotation.Quaternion());
+		this->SetActorLocation(ReplicatedLocation);
+	}
 
 	DrawDebugString(GetWorld(), FVector(0, 0, 100), GetEnumText(Role), this, FColor::White, DeltaTime);
 }
@@ -83,6 +98,8 @@ void AGoKart::UpdateRotation(float DeltaTime)
 	Velocity = RotationDelta.RotateVector(Velocity);
 
 	AddActorWorldRotation(RotationDelta);
+
+	ReplicatedRotation = this->GetActorRotation();
 }
 
 void AGoKart::UpdatePositionFromVelocity(float DeltaTime)
@@ -92,6 +109,8 @@ void AGoKart::UpdatePositionFromVelocity(float DeltaTime)
 	FHitResult hitResult;
 
 	AddActorWorldOffset(translation, true, &hitResult);
+
+	ReplicatedLocation = this->GetActorLocation();
 
 	if (hitResult.IsValidBlockingHit())
 		Velocity = FVector::ZeroVector;

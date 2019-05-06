@@ -60,4 +60,10 @@ private:
 
 	UPROPERTY(EditAnywhere)
 		float MaxDegreesPerSecond = 90;
+
+	UPROPERTY(Replicated)
+		FVector ReplicatedLocation;
+
+	UPROPERTY(Replicated)
+		FRotator ReplicatedRotation;
 };
